@@ -61,4 +61,5 @@ def profile_csv(path: Path | str, max_sample: int = 50_000) -> dict[str, Any]:
         "columns": len(cols),
         "duplicate_rows_approx": dup_rows,
         "fields": col_reports,
+        "empty_columns": [f["column"] for f in col_reports if f["nonempty"] == 0],
     }
