@@ -63,3 +63,14 @@ def profile_csv(path: Path | str, max_sample: int = 50_000) -> dict[str, Any]:
         "fields": col_reports,
         "empty_columns": [f["column"] for f in col_reports if f["nonempty"] == 0],
     }
+
+
+def row_count(path) -> int:
+    """Count data rows (excluding header) in a CSV path."""
+    from pathlib import Path
+    import csv
+    p = Path(path)
+    with p.open(newline="", encoding="utf-8") as f:
+        r = csv.reader(f)
+        next(r, None)
+        return sum(1 for _ in r)
