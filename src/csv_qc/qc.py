@@ -74,3 +74,18 @@ def row_count(path) -> int:
         r = csv.reader(f)
         next(r, None)
         return sum(1 for _ in r)
+
+
+def null_rates(path: Path | str, max_sample: int = 50_000) -> dict[str, float]:
+    """Return per-column null/empty rate from a CSV profile."""
+    rep = profile_csv(path, max_sample=max_sample)
+    rates: dict[str, float] = {}
+    rows = int(rep.get("rows") or 0)
+    for f in rep.get("fields") or []:
+        col = f.get("column") or ""
+        nonempty = int(f.get("nonempty") or 0)
+        if rows <= 0:
+            rates[col] = 0.0
+        else:
+            rates[col] = max(0.0, 1.0 - (nonempty / rows))
+    return rates
