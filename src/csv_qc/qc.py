@@ -89,3 +89,26 @@ def null_rates(path: Path | str, max_sample: int = 50_000) -> dict[str, float]:
         else:
             rates[col] = max(0.0, 1.0 - (nonempty / rows))
     return rates
+
+
+def constant_columns(path: Path | str, max_sample: int = 50_000) -> list[str]:
+    """Columns whose non-empty values are all identical (or all empty)."""
+    path = Path(path)
+    with path.open(newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        if not reader.fieldnames:
+            raise ValueError("CSV has no header")
+        cols = list(reader.fieldnames)
+        seen: dict[str, set[str]] = {c: set() for c in cols}
+        n = 0
+        for row in reader:
+            n += 1
+            if n > max_sample:
+                break
+            for c in cols:
+                v = (row.get(c) or "").strip()
+                if v:
+                    seen[c].add(v)
+                    if len(seen[c]) > 1:
+                        continue
+        return [c for c in cols if len(seen[c]) <= 1]
