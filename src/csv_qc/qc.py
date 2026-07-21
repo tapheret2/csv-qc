@@ -112,3 +112,13 @@ def constant_columns(path: Path | str, max_sample: int = 50_000) -> list[str]:
                     if len(seen[c]) > 1:
                         continue
         return [c for c in cols if len(seen[c]) <= 1]
+
+
+def column_names(path: Path | str) -> list[str]:
+    """Return header field names for a CSV file."""
+    path = Path(path)
+    with path.open(newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        if not reader.fieldnames:
+            raise ValueError("CSV has no header")
+        return list(reader.fieldnames)
