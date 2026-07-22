@@ -122,3 +122,20 @@ def column_names(path: Path | str) -> list[str]:
         if not reader.fieldnames:
             raise ValueError("CSV has no header")
         return list(reader.fieldnames)
+
+
+def detect_delimiter(sample: str) -> str:
+    """Pick the most frequent delimiter among comma/semicolon/tab/pipe in sample."""
+    if not sample:
+        raise ValueError("empty sample")
+    candidates = [",", ";", "\t", "|"]
+    counts = {d: sample.count(d) for d in candidates}
+    best = max(candidates, key=lambda d: counts[d])
+    if counts[best] == 0:
+        return ","
+    return best
+
+
+def header_fingerprint(headers: list[str]) -> str:
+    """Stable lowercase|joined fingerprint of header names."""
+    return "|".join(h.strip().lower() for h in headers)
