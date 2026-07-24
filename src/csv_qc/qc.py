@@ -139,3 +139,21 @@ def detect_delimiter(sample: str) -> str:
 def header_fingerprint(headers: list[str]) -> str:
     """Stable lowercase|joined fingerprint of header names."""
     return "|".join(h.strip().lower() for h in headers)
+
+
+def count_nullish(values: list) -> int:
+    """Count None / empty-string / whitespace-only cells."""
+    n = 0
+    for v in values:
+        if v is None:
+            n += 1
+        elif isinstance(v, str) and v.strip() == "":
+            n += 1
+    return n
+
+
+def unique_ratio(values: list) -> float:
+    """Fraction of unique values (0 if empty)."""
+    if not values:
+        return 0.0
+    return len(set(values)) / len(values)
